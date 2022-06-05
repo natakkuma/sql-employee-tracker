@@ -63,7 +63,7 @@ const initialSelection = async () => {
                 break
 
             case 'Exit':
-                con.end();
+                db.end();
                 break;
         };
     } catch (err) {

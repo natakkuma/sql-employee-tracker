@@ -1,4 +1,4 @@
-# sql-employee-tracker
+# SQL Employee Tracker
 
 <h2>Description</h2>
 A command-line application to manage a company's employee database, using Node.js, Inquirer, and MySQL.
@@ -26,3 +26,9 @@ WHEN I choose to add an employee
 THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 WHEN I choose to update an employee role
 THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+
+<h2>Video Walkthrough Link</h2>
+https://drive.google.com/file/d/1HkKdfULEqQ8xIoyZ8bJSxJv-t4bb9rQQ/view
+
+<h2>Contribution</h2>
+Made with ❤️ by Natakkuma
