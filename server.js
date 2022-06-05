@@ -1,8 +1,10 @@
 //REQUIRE
+require('dotenv').config();
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const consoleTable = require('console.table');
 const db = require('./db/connect');
+
 
 //CONNECT TO DATABASE AND START FUNCTION
 db.connect(function (err) {
@@ -61,7 +63,7 @@ const initialSelection = async () => {
                 break
 
             case 'Exit':
-                connection.end();
+                con.end();
                 break;
         };
     } catch (err) {
@@ -76,7 +78,7 @@ const viewDepartment = async () => {
     console.log('Department View');
     try {
         let query = 'SELECT * FROM department';
-        connection.query(query, function (err, res) {
+        db.query(query, function (err, res) {
             if (err) throw err;
             let departmentArray = [];
             res.forEach(department => departmentArray.push(department));
@@ -94,7 +96,7 @@ const viewRole = async () => {
     console.log('Role View');
     try {
         let query = 'SELECT * FROM role';
-        connection.query(query, function (err, res) {
+        db.query(query, function (err, res) {
             if (err) throw err;
             let roleArray = [];
             res.forEach(role => roleArray.push(role));
@@ -112,7 +114,7 @@ const viewEmployee = async () => {
     console.log('Employee View');
     try {
         let query = 'SELECT * FROM employee';
-        connection.query(query, function (err, res) {
+        db.query(query, function (err, res) {
             if (err) throw err;
             let employeeArray = [];
             res.forEach(employee => employeeArray.push(employee));
@@ -138,7 +140,7 @@ const addDepartment = async () => {
             }
         ]);
 
-        let result = await connection.query("INSERT INTO department SET ?", {
+        let result = await db.query("INSERT INTO department SET ?", {
             department_name: answer.deptName
         });
 
@@ -156,7 +158,8 @@ const addRole = async () => {
     try {
         console.log('Role Add');
 
-        let departments = await connection.query("SELECT * FROM department")
+        let departments = await db.query("SELECT * FROM department")
+        // const departments = await db.query("SELECT * FROM department")
 
         let answer = await inquirer.prompt([
             {
@@ -172,7 +175,7 @@ const addRole = async () => {
             {
                 name: 'departmentId',
                 type: 'list',
-                choices: departments.map((departmentId) => {
+                choices: Object.keys(departments).map((departmentId) => {
                     return {
                         name: departmentId.department_name,
                         value: departmentId.id
@@ -188,7 +191,7 @@ const addRole = async () => {
                 chosenDepartment = departments[i];
             };
         }
-        let result = await connection.query("INSERT INTO role SET ?", {
+        let result = await db.query("INSERT INTO role SET ?", {
             title: answer.title,
             salary: answer.salary,
             department_id: answer.departmentId
@@ -208,9 +211,9 @@ const addEmployee = async () => {
     try {
         console.log('Employee Add');
 
-        let roles = await connection.query("SELECT * FROM role");
+        let roles = await db.query("SELECT * FROM role");
 
-        let managers = await connection.query("SELECT * FROM employee");
+        let managers = await db.query("SELECT * FROM employee");
 
         let answer = await inquirer.prompt([
             {
@@ -226,7 +229,7 @@ const addEmployee = async () => {
             {
                 name: 'employeeRoleId',
                 type: 'list',
-                choices: roles.map((role) => {
+                choices:  Object.keys(roles).map((role) => {
                     return {
                         name: role.title,
                         value: role.id
@@ -237,7 +240,7 @@ const addEmployee = async () => {
             {
                 name: 'employeeManagerId',
                 type: 'list',
-                choices: managers.map((manager) => {
+                choices:  Object.keys(managers).map((manager) => {
                     return {
                         name: manager.first_name + " " + manager.last_name,
                         value: manager.id
@@ -247,7 +250,7 @@ const addEmployee = async () => {
             }
         ])
 
-        let result = await connection.query("INSERT INTO employee SET ?", {
+        let result = await db.query("INSERT INTO employee SET ?", {
             first_name: answer.firstName,
             last_name: answer.lastName,
             role_id: (answer.employeeRoleId),
@@ -268,13 +271,13 @@ const employeeUpdate = async () => {
     try {
         console.log('Employee Update');
         
-        let employees = await connection.query("SELECT * FROM employee");
+        let employees = await db.query("SELECT * FROM employee");
 
         let employeeSelection = await inquirer.prompt([
             {
                 name: 'employee',
                 type: 'list',
-                choices: employees.map((employeeName) => {
+                choices:  Object.keys(employees).map((employeeName) => {
                     return {
                         name: employeeName.first_name + " " + employeeName.last_name,
                         value: employeeName.id
@@ -284,13 +287,13 @@ const employeeUpdate = async () => {
             }
         ]);
 
-        let roles = await connection.query("SELECT * FROM role");
+        let roles = await db.query("SELECT * FROM role");
 
         let roleSelection = await inquirer.prompt([
             {
                 name: 'role',
                 type: 'list',
-                choices: roles.map((roleName) => {
+                choices:  Object.keys(roles).map((roleName) => {
                     return {
                         name: roleName.title,
                         value: roleName.id
@@ -300,7 +303,7 @@ const employeeUpdate = async () => {
             }
         ]);
 
-        let result = await connection.query("UPDATE employee SET ? WHERE ?", [{ role_id: roleSelection.role }, { id: employeeSelection.employee }]);
+        let result = await db.query("UPDATE employee SET ? WHERE ?", [{ role_id: roleSelection.role }, { id: employeeSelection.employee }]);
 
         console.log(`The role was successfully updated.`);
         initialSelection();

@@ -1,6 +1,7 @@
 # sql-employee-tracker
 
 <h2>Description</h2>
+A command-line application to manage a company's employee database, using Node.js, Inquirer, and MySQL.
 
 <h2>User Story</h2>
 AS A business owner
